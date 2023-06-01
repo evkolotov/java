@@ -177,7 +177,7 @@ public class Theory {
     public static void randomMassiveWrite () throws IOException {
         FileWriter writer = new FileWriter("src/randomMassive.txt");
         Random random = new Random();
-        int numberOfRows = 5;
+        int numberOfRows = 10;
         int numberOfColums = 10;
         int maxRandomNumber = 100;
         writer.write(Integer.toString(numberOfRows));

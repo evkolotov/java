@@ -4,7 +4,6 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
 //        Theory.theoryCheck();
-//
 //        Theory.taskFirst();
 //        Theory.taskSecond();
 //        Theory.taskThird();
@@ -13,6 +12,12 @@ public class Main {
 //        Theory.randomMassiveWrite();
 //        Theory.randomMassiveRead();
 
+        DZ.taskNoNumber();
+        DZ.taskFirst();
+        DZ.taskSecond();
+        DZ.taskThird();
+        DZ.taskForth();
+        DZ.taskFifth();
 
     }
 }
