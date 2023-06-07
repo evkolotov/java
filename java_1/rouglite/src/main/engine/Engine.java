@@ -2,21 +2,22 @@ package main.engine;
 
 import main.objects.Map;
 import main.objects.objectOnMap.Coin;
-import main.objects.objectOnMap.ListObjectOnMap;
+import main.objects.ListObjectOnMap;
+import main.objects.objectOnMap.Teleport;
 import main.objects.objectOnMap.Wall;
+import main.objects.objectOnMap.person.Enemy.PatrolEnemy;
 import main.objects.objectOnMap.person.Hero;
+import main.objects.objectOnMap.person.Spike;
 
 import java.util.Scanner;
 
 public class Engine {
     private static Engine engine;
     //default settings map
-    private int numberOfRowsMap = 25;
-    private int numberOfColumnsMap = 25;
-
+    public int numberOfRowsMap = 25;
+    public int numberOfColumnsMap = 25;
     Scanner scanner = new Scanner(System.in);
     private Engine() {
-
     }
     public static Engine getEngine() {
         if (engine == null) {
@@ -24,35 +25,44 @@ public class Engine {
         }
         return engine;
     }
-
     public void run() {
         //start
-        Map map = new Map(numberOfRowsMap, numberOfColumnsMap);
-
         ListObjectOnMap listObjectOnMap = new ListObjectOnMap();
 
+        Map map = new Map(listObjectOnMap);
+
         Hero hero = new Hero("Heroin", listObjectOnMap);
-        listObjectOnMap.addObjectToList(hero.charOnMap, hero.getLocation());
+        hero.addOnMap();
 
-        Wall wall = new Wall(numberOfRowsMap, numberOfColumnsMap);
-        listObjectOnMap.addObjectToList(wall.charOnMap, wall.getLocation());
+        Wall wall = new Wall(listObjectOnMap);
+        wall.addOnMap();
 
-        Coin coin = new Coin(numberOfRowsMap, numberOfColumnsMap);
-        coin.addCoinOnMap(listObjectOnMap);
-        listObjectOnMap.addObjectToList(coin.charOnMap, coin.getLocation());
+        Coin coin = new Coin(listObjectOnMap);
+        coin.addOnMap();
 
-        map.generateMap(listObjectOnMap.getListObjectOnMap());
+        Teleport teleport = new Teleport(listObjectOnMap);
+        teleport.addOnMap();
+
+        Spike spike = new Spike(listObjectOnMap);
+        spike.addOnMap();
+
+        PatrolEnemy patrolEnemy = new PatrolEnemy("patrolEnemy", listObjectOnMap);
+        patrolEnemy.addOnMap();
+
+        map.generateMap();
         map.renderMap();
-
+        hero.getStatus();
 //        //run
-        while (true) {
-            char inputChar = scanner.next().charAt(0);
+        while (hero.currentHp > 0) {
+            char inputChar = System.console().readPassword()[0];
             hero.action (inputChar);
+            patrolEnemy.action();
 
 
-            map.generateMap(listObjectOnMap.getListObjectOnMap());
+            map.generateMap();
             map.renderMap();
+            hero.getStatus();
         }
-
+        System.out.println("\n"+"YOU DIED");
     }
 }

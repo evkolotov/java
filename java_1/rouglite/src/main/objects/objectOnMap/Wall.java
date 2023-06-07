@@ -1,24 +1,28 @@
 package main.objects.objectOnMap;
 
+import main.engine.Engine;
+import main.objects.ListObjectOnMap;
+
 import java.util.HashSet;
 import java.util.Random;
 
 public class Wall extends Object {
     private int numberOfWallOnMap = 10;
-    private int numberOfRowsMap;
-    private int numberOfColumnsMap;
 
-    public Wall (int numberOfRowsMap, int numberOfColumnsMap) {
-        this.numberOfWallOnMap = numberOfWallOnMap;
-        this.numberOfRowsMap = numberOfRowsMap;
-        this.numberOfColumnsMap = numberOfColumnsMap;
+    public Wall (ListObjectOnMap listObjectOnMap) {
+        this.numberOfRowsMap = Engine.getEngine().numberOfRowsMap;
+        this.numberOfColumnsMap = Engine.getEngine().numberOfColumnsMap;
         this.charOnMap = '#';
-        this.location = new HashSet<int[]>();
+        this.listObjectOnMap = listObjectOnMap;
+        this.locationList = new HashSet<int[]>();
+    }
+
+    public void addOnMap() {
         //add wall along the edges of the map
         for (int i = 0; i<numberOfRowsMap; i++){
             for (int j = 0; j<numberOfColumnsMap; j++) {
                 if (i==0 || j==0 || i==numberOfRowsMap-1 || j==numberOfColumnsMap-1) {
-                    location.add(new int[] {i,j});
+                    locationList.add(new int[] {i,j});
                 }
             }
         }
@@ -34,12 +38,16 @@ public class Wall extends Object {
                     int currentY = startRows+j;
                     int currentX = startColumns+k;
                     if (currentY < numberOfRowsMap-2 && currentX < numberOfColumnsMap-2) {
-                        location.add(new int[] {currentY,currentX});
+                        locationList.add(new int[] {currentY,currentX});
                     }
                 }
             }
         }
-
+        listObjectOnMap.addObjectToList(charOnMap, locationList);
     }
+
+
+
+
 
 }

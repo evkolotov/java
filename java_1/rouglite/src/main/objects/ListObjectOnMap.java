@@ -1,11 +1,16 @@
-package main.objects.objectOnMap;
+package main.objects;
 
+import main.engine.Engine;
 import main.objects.ObjectOnMapChecker;
 
 import java.util.*;
+import java.util.Map;
 
 public class ListObjectOnMap implements ObjectOnMapChecker {
-    private HashMap<Character, HashSet<int[]>> listObjectOnMap = new HashMap<>();
+    private HashMap<Character, HashSet<int[]>> listObjectOnMap;
+    public ListObjectOnMap() {
+        listObjectOnMap = new HashMap<>();
+    }
 
     public void addObjectToList(Character charOnMap, HashSet<int[]> locationList) {
         listObjectOnMap.put(charOnMap, locationList);

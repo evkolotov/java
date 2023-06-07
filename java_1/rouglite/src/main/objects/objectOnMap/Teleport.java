@@ -6,19 +6,21 @@ import main.objects.ListObjectOnMap;
 import java.util.HashSet;
 import java.util.Random;
 
-public class Coin extends Object{
-    private int numberOfCoin = 20;
+public class Teleport extends Object{
 
-    public Coin (ListObjectOnMap listObjectOnMap) {
-        this.charOnMap = '$';
+    private int numberOfTeleportOnMap = 5;
+
+
+    public Teleport (ListObjectOnMap listObjectOnMap) {
+        this.charOnMap ='t';
         this.numberOfRowsMap = Engine.getEngine().numberOfRowsMap;
-        this.numberOfColumnsMap = Engine.getEngine().numberOfColumnsMap;
+        this.numberOfColumnsMap = Engine.getEngine().numberOfRowsMap;
         this.locationList = new HashSet<int[]>();
         this.listObjectOnMap = listObjectOnMap;
     }
     public void addOnMap() {
         Random random = new Random();
-        for (int i=0; i<numberOfCoin; i++) {
+        for (int i=0; i<numberOfTeleportOnMap; i++) {
             int[] newLocation;
             do {
                 newLocation = new int[] {random.nextInt(numberOfRowsMap), random.nextInt(numberOfColumnsMap)};
@@ -27,4 +29,5 @@ public class Coin extends Object{
             listObjectOnMap.addObjectToList(charOnMap, locationList);
         }
     }
+
 }

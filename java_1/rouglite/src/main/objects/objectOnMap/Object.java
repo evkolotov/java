@@ -1,16 +1,17 @@
 package main.objects.objectOnMap;
 
 
-import java.util.HashMap;
+import main.objects.ListObjectOnMap;
+
 import java.util.HashSet;
 
 public abstract class Object  {
     public char charOnMap;
-    public HashSet<int[]> location;
+    public HashSet<int[]> locationList;
 
-    public HashSet<int[]> getLocation() {
-        return location;
-    }
+    public ListObjectOnMap listObjectOnMap;
+    public int numberOfRowsMap;
+    public int numberOfColumnsMap;
 
 
 }

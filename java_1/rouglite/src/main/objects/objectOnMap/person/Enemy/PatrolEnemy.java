@@ -1,79 +1,69 @@
-package main.objects.objectOnMap.person;
+package main.objects.objectOnMap.person.Enemy;
 
 import main.engine.Engine;
 import main.objects.ListObjectOnMap;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Random;
 
-public class Hero extends Person {
-    private int lvl;
-    private int numberOfCoin;
+public class PatrolEnemy extends Enemy {
     int[] currentLocation;
     int[] newLocation;
-
-    HashMap<Character, Runnable> action = new HashMap<Character, Runnable>();
+    boolean switchLogicForMove = true;
+    int numberOfDirection = 2;
     Iterator<int[]> iterator;
-
-    public Hero (String name, ListObjectOnMap listObjectOnMap) {
+    public PatrolEnemy (String name, ListObjectOnMap listObjectOnMap) {
         this.listObjectOnMap = listObjectOnMap;
         this.name = name;
-        this.charOnMap = '@';
-        this.numberOfCoin = 0;
-        this.maxHp = 100;
+        this.charOnMap = 'b';
+        this.maxHp = 30;
         this.currentHp = maxHp;
-        this.damage = 10;
+        this.damage = 5;
         this.locationList = new HashSet<int[]>();
+        this.numberOfRowsMap = Engine.getEngine().numberOfRowsMap;
+        this.numberOfColumnsMap = Engine.getEngine().numberOfColumnsMap;
     }
     public void addOnMap () {
-        locationList.add(new int[] {1,1});
+        Random random = new Random();
+        int[] newLocation;
+        do {
+            newLocation = new int[] {random.nextInt(numberOfRowsMap), random.nextInt(numberOfColumnsMap)};
+        } while (listObjectOnMap.hasObjectAtLocation(newLocation) != '.');
+        locationList.add(newLocation);
         listObjectOnMap.addObjectToList(charOnMap, locationList);
     }
-    public void action (char inputChar) {
-        //move logic
-        action = new HashMap<Character, Runnable>();
-        action.put('w', () -> {
-            newLocation = new int[]{currentLocation[0] - 1, currentLocation[1]};
-        });
-        action.put('s', () -> {
-            newLocation = new int[]{currentLocation[0] + 1, currentLocation[1]};
-        });
-        action.put('a', () -> {
-            newLocation = new int[]{currentLocation[0], currentLocation[1] - 1};
-        });
-        action.put('d', () -> {
-            newLocation = new int[]{currentLocation[0], currentLocation[1] + 1};
-        });
-
-        //start Action
-        if (action.containsKey(inputChar)) {
+    public void action () {
+        boolean actionSuccess = false;
+        while (!actionSuccess) {
+            iterator = locationList.iterator();
+            currentLocation = iterator.next();
             iterator = locationList.iterator();
             currentLocation = iterator.next();
             //move logic
-            action.get(inputChar).run();
+            if (switchLogicForMove) {
+                newLocation = new int[]{currentLocation[0] - 1, currentLocation[1]};
+            } else {
+                newLocation = new int[]{currentLocation[0] + 1, currentLocation[1]};
+            }
             //iteration logic
             if (iterationLogic(listObjectOnMap.hasObjectAtLocation(newLocation), newLocation)) {
                 locationList.remove(currentLocation);
                 locationList.add(newLocation);
                 listObjectOnMap.addObjectToList(charOnMap, locationList);
-            }
-        } else {
-            System.out.println("wrong input");
-            Set<Character> keys = action.keySet();
-            for (Character key : keys) {
-                System.out.println("wrong input, use key:");
-                System.out.print(key+"\t");
+                actionSuccess = !actionSuccess;
+            } else {
+                switchLogicForMove = !switchLogicForMove;
             }
         }
     }
+
     @Override
     public boolean iterationLogic(Character currentCharOnMap, int[] newLocation) {
         switch (currentCharOnMap) {
-            case '#':
+            case '#', 's':
                 return false;
-            case '$':
-                numberOfCoin++;
-                listObjectOnMap.removeObjectToList(currentCharOnMap, newLocation);
-                return true;
             case 't':
                 Random random = new Random();
 
@@ -93,13 +83,7 @@ public class Hero extends Person {
                 locationList.add(newLocation);
                 listObjectOnMap.addObjectToList(charOnMap, locationList);
                 return false;
-            case 's':
-                currentHp -= 10;
-                return true;
         }
         return true;
-    }
-    public void getStatus () {
-        System.out.println("[StatusBar] [Name: "+name+"] [HP: "+currentHp+"/"+maxHp+"] [numberOfCoin: "+numberOfCoin+"]");
     }
 }
