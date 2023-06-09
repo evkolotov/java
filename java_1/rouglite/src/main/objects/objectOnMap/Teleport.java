@@ -1,32 +1,37 @@
 package main.objects.objectOnMap;
 
 import main.engine.Engine;
-import main.objects.ListObjectOnMap;
+import main.objects.ListLocationAndObjectOnMap;
 
-import java.util.HashSet;
-import java.util.Random;
-
-public class Teleport extends Object{
-
+public class Teleport extends ObjectOnMap {
     private int numberOfTeleportOnMap = 5;
-
-
-    public Teleport (ListObjectOnMap listObjectOnMap) {
-        this.charOnMap ='t';
+    public Teleport (ListLocationAndObjectOnMap listLocationAndObjectOnMap) {
+        //InitWallUseForCreateAllTeleportOnMap
+        this.listLocationAndObjectOnMap = listLocationAndObjectOnMap;
         this.numberOfRowsMap = Engine.getEngine().numberOfRowsMap;
-        this.numberOfColumnsMap = Engine.getEngine().numberOfRowsMap;
-        this.locationList = new HashSet<int[]>();
-        this.listObjectOnMap = listObjectOnMap;
+        this.numberOfColumnsMap = Engine.getEngine().numberOfColumnsMap;
+    }
+    private Teleport (int[] currentLocation, ListLocationAndObjectOnMap listLocationAndObjectOnMap) {
+        //ObjectOnMap
+        this.charOnMap = 't';
+        this.currentLocation = currentLocation;
+        this.listLocationAndObjectOnMap = listLocationAndObjectOnMap;
+    }
+    private void addCurrentTeleportOnMap () {
+        listLocationAndObjectOnMap.addObjectToListLocationAndObjectOnMap(currentLocation, this);
     }
     public void addOnMap() {
-        Random random = new Random();
-        for (int i=0; i<numberOfTeleportOnMap; i++) {
-            int[] newLocation;
-            do {
-                newLocation = new int[] {random.nextInt(numberOfRowsMap), random.nextInt(numberOfColumnsMap)};
-            } while (listObjectOnMap.hasObjectAtLocation(newLocation) != '.');
-            locationList.add(newLocation);
-            listObjectOnMap.addObjectToList(charOnMap, locationList);
+        //add random Spike
+        int counter = 0;
+        while (counter != numberOfTeleportOnMap) {
+            int currentY = Engine.getEngine().random.nextInt(numberOfRowsMap);
+            int currentX = Engine.getEngine().random.nextInt(numberOfColumnsMap);
+            int[] currentLocation = new int[] {currentY,currentX};
+            if (listLocationAndObjectOnMap.hasObjectAtLocation(currentLocation) == null) {
+                Teleport currentTeleport = new Teleport(currentLocation, listLocationAndObjectOnMap);
+                currentTeleport.addCurrentTeleportOnMap();
+                counter++;
+            }
         }
     }
 

@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="rouglite:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/rouglite_jar</output-path>
+    <root id="archive" name="rouglite.jar">
+      <element id="module-output" name="rouglite" />
+    </root>
+  </artifact>
+</component>

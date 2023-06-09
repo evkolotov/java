@@ -1,16 +1,16 @@
 package main.objects.objectOnMap.person;
 
 import main.objects.InteractionLogic;
-import main.objects.objectOnMap.Object;
+import main.objects.objectOnMap.ObjectOnMap;
 
 import java.util.HashMap;
-import java.util.HashSet;
 
-public abstract class Person extends Object implements InteractionLogic {
-    public String name;
-    public int maxHp;
-    public int currentHp;
-    public int damage;
+public abstract class Person extends ObjectOnMap implements InteractionLogic {
+    public int[] newLocation;
     public HashMap<Character, Runnable> action;
+    public boolean checkExistence () {
+        return listLocationAndObjectOnMap.checkObjectOnList(this);
+    }
+
 
 }

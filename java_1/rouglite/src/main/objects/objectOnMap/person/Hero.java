@@ -1,36 +1,29 @@
 package main.objects.objectOnMap.person;
 
 import main.engine.Engine;
-import main.objects.ListObjectOnMap;
+import main.objects.ListLocationAndObjectOnMap;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
 
 public class Hero extends Person {
+    private String name;
     private int lvl;
+    private int currentExp;
     private int numberOfCoin;
-    int[] currentLocation;
-    int[] newLocation;
-
-    HashMap<Character, Runnable> action = new HashMap<Character, Runnable>();
-    Iterator<int[]> iterator;
-
-    public Hero (String name, ListObjectOnMap listObjectOnMap) {
-        this.listObjectOnMap = listObjectOnMap;
-        this.name = name;
+    public Hero (String name, ListLocationAndObjectOnMap listLocationAndObjectOnMap) {
+        //ObjectOnMap
         this.charOnMap = '@';
-        this.numberOfCoin = 0;
+        this.currentLocation = new int[]{0,0};
+        this.listLocationAndObjectOnMap = listLocationAndObjectOnMap;
         this.maxHp = 100;
         this.currentHp = maxHp;
-        this.damage = 10;
-        this.locationList = new HashSet<int[]>();
-    }
-    public void addOnMap () {
-        locationList.add(new int[] {1,1});
-        listObjectOnMap.addObjectToList(charOnMap, locationList);
-    }
-    public void action (char inputChar) {
-        //move logic
-        action = new HashMap<Character, Runnable>();
+        this.damage = 15;
+        //Person
+        this.newLocation = new int[]{0,0};
+        //PersonAction
+        this.action = new HashMap<Character, Runnable>();
         action.put('w', () -> {
             newLocation = new int[]{currentLocation[0] - 1, currentLocation[1]};
         });
@@ -43,18 +36,28 @@ public class Hero extends Person {
         action.put('d', () -> {
             newLocation = new int[]{currentLocation[0], currentLocation[1] + 1};
         });
-
+        //Hero
+        this.name = name;
+        this.lvl = 1;
+        this.currentExp = 0;
+        this.numberOfCoin = 0;
+    }
+    public void addOnMap () {
+        currentLocation = new int[]{1,1};
+        listLocationAndObjectOnMap.addObjectToListLocationAndObjectOnMap(currentLocation, this);
+    }
+    public void action (char inputChar) {
+        if (!checkExistence()) {
+            return;
+        }
         //start Action
         if (action.containsKey(inputChar)) {
-            iterator = locationList.iterator();
-            currentLocation = iterator.next();
-            //move logic
             action.get(inputChar).run();
-            //iteration logic
-            if (iterationLogic(listObjectOnMap.hasObjectAtLocation(newLocation), newLocation)) {
-                locationList.remove(currentLocation);
-                locationList.add(newLocation);
-                listObjectOnMap.addObjectToList(charOnMap, locationList);
+            int[] locationForCheck = newLocation;
+            if (iterationLogic()) {
+                listLocationAndObjectOnMap.removeObjectFromListLocationAndObjectOnMap(currentLocation);
+                currentLocation = newLocation;
+                listLocationAndObjectOnMap.addObjectToListLocationAndObjectOnMap(currentLocation, this);
             }
         } else {
             System.out.println("wrong input");
@@ -64,42 +67,82 @@ public class Hero extends Person {
                 System.out.print(key+"\t");
             }
         }
+        if (currentHp <= 0) {
+            dispose();
+        }
+        if (currentExp > 100){
+            currentExp %= 100;
+            lvl++;
+            maxHp += 10;
+            currentHp = maxHp;
+            damage += 5;
+        }
     }
     @Override
-    public boolean iterationLogic(Character currentCharOnMap, int[] newLocation) {
-        switch (currentCharOnMap) {
+    public boolean iterationLogic() {
+        if (listLocationAndObjectOnMap.hasObjectAtLocation(newLocation) == null){
+            //if none, can move
+            return true;
+        }
+        char charOnNewLocation = listLocationAndObjectOnMap.hasObjectAtLocation(newLocation).charOnMap;
+        switch (charOnNewLocation) {
             case '#':
                 return false;
             case '$':
                 numberOfCoin++;
-                listObjectOnMap.removeObjectToList(currentCharOnMap, newLocation);
+                listLocationAndObjectOnMap.removeObjectFromListLocationAndObjectOnMap(newLocation);
                 return true;
             case 't':
-                Random random = new Random();
-
-                HashSet<int[]> locationOfTeleport = listObjectOnMap.getListObjectOnMap().get(currentCharOnMap);
-
-                boolean newLocationFound = false;
-                while (!newLocationFound) {
-                    for(int[] value : locationOfTeleport) {
-                        if (!Arrays.equals(value, newLocation) && random.nextBoolean()) {
-                            newLocation = value;
-                            newLocationFound = true;
-                            break;
+                ArrayList<int[]> locationTeleport = listLocationAndObjectOnMap.getListLocationByChar(charOnNewLocation);
+                //if all teleport in bad position, destroy teleport
+                int counter = 0;
+                while (counter<10) {
+                    counter++;
+                    int[] randomNewLocation = locationTeleport.get(Engine.getEngine().random.nextInt(locationTeleport.size()));
+                    if (randomNewLocation != newLocation) {
+                        //add list location around teleport
+                        ArrayList<int[]> listLocationAroundChosenTeleport = new ArrayList<>();
+                        listLocationAroundChosenTeleport.add(new int[] {randomNewLocation[0]+1, randomNewLocation[1]});
+                        listLocationAroundChosenTeleport.add(new int[] {randomNewLocation[0]-1, randomNewLocation[1]});
+                        listLocationAroundChosenTeleport.add(new int[] {randomNewLocation[0], randomNewLocation[1]+1});
+                        listLocationAroundChosenTeleport.add(new int[] {randomNewLocation[0], randomNewLocation[1]-1});
+                        //check location around chosen teleport
+                        for (int[] location : listLocationAroundChosenTeleport) {
+                            if (listLocationAndObjectOnMap.hasObjectAtLocation(location) == null) {
+                                newLocation = location;
+                                return true;
+                            }
                         }
                     }
                 }
-                locationList.remove(currentLocation);
-                locationList.add(newLocation);
-                listObjectOnMap.addObjectToList(charOnMap, locationList);
-                return false;
-            case 's':
-                currentHp -= 10;
                 return true;
+            case 's':
+                currentHp -= listLocationAndObjectOnMap.hasObjectAtLocation(newLocation).damage;
+                return false;
+            case 'b', 'd':
+                listLocationAndObjectOnMap.hasObjectAtLocation(newLocation).currentHp -= damage;
+                if (listLocationAndObjectOnMap.hasObjectAtLocation(newLocation).currentHp <= 0) {
+                    currentExp += listLocationAndObjectOnMap.hasObjectAtLocation(newLocation).maxHp;
+                    listLocationAndObjectOnMap.hasObjectAtLocation(newLocation).dispose();
+                    System.out.println("you killed the enemy");
+                    System.out.println("We're Watching You. Scum");
+                } else {
+                    System.out.println("you attacked the enemy, for what?");
+                }
+                return false;
         }
-        return true;
+        return false;
     }
     public void getStatus () {
-        System.out.println("[StatusBar] [Name: "+name+"] [HP: "+currentHp+"/"+maxHp+"] [numberOfCoin: "+numberOfCoin+"]");
+        System.out.println("[StatusBar] [Name: "+name+
+                "] [lvl: "+lvl+
+                "] [exp: "+currentExp+
+                "] [HP: "+currentHp+"/"+maxHp+
+                "] [Damage: "+damage+
+                "] [numberOfCoin: "+numberOfCoin+"]");
+    }
+    public void dispose() {
+        System.out.println("YOU DIED, THANKS");
+        listLocationAndObjectOnMap.removeObjectFromListLocationAndObjectOnMap(currentLocation);
     }
 }

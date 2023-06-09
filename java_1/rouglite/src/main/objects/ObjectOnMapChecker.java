@@ -1,5 +1,7 @@
 package main.objects;
 
-public interface ObjectOnMapChecker {
-    public char hasObjectAtLocation(int[] location);
+import main.objects.objectOnMap.ObjectOnMap;
+
+public interface ObjectOnMapChecker <T> {
+    public T hasObjectAtLocation(int[] location);
 }

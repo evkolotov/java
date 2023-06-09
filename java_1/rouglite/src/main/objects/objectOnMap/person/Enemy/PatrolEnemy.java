@@ -1,89 +1,123 @@
 package main.objects.objectOnMap.person.Enemy;
 
 import main.engine.Engine;
-import main.objects.ListObjectOnMap;
+import main.objects.ListLocationAndObjectOnMap;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Random;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class PatrolEnemy extends Enemy {
-    int[] currentLocation;
-    int[] newLocation;
-    boolean switchLogicForMove = true;
-    int numberOfDirection = 2;
-    Iterator<int[]> iterator;
-    public PatrolEnemy (String name, ListObjectOnMap listObjectOnMap) {
-        this.listObjectOnMap = listObjectOnMap;
-        this.name = name;
+    char currentDirection = 'w';
+    public PatrolEnemy (ListLocationAndObjectOnMap listLocationAndObjectOnMap) {
+        //ObjectOnMap
         this.charOnMap = 'b';
+        this.currentLocation = new int[]{0,0};
+        this.listLocationAndObjectOnMap = listLocationAndObjectOnMap;
         this.maxHp = 30;
         this.currentHp = maxHp;
         this.damage = 5;
-        this.locationList = new HashSet<int[]>();
         this.numberOfRowsMap = Engine.getEngine().numberOfRowsMap;
         this.numberOfColumnsMap = Engine.getEngine().numberOfColumnsMap;
+        //Person
+        this.newLocation = new int[]{0,0};
+        //PersonAction
+        this.action = new HashMap<Character, Runnable>();
+        action.put('w', () -> {
+            newLocation = new int[]{currentLocation[0] - 1, currentLocation[1]};
+        });
+        action.put('s', () -> {
+            newLocation = new int[]{currentLocation[0] + 1, currentLocation[1]};
+        });
+        action.put('a', () -> {
+            newLocation = new int[]{currentLocation[0], currentLocation[1] - 1};
+        });
+        action.put('d', () -> {
+            newLocation = new int[]{currentLocation[0], currentLocation[1] + 1};
+        });
     }
     public void addOnMap () {
-        Random random = new Random();
-        int[] newLocation;
-        do {
-            newLocation = new int[] {random.nextInt(numberOfRowsMap), random.nextInt(numberOfColumnsMap)};
-        } while (listObjectOnMap.hasObjectAtLocation(newLocation) != '.');
-        locationList.add(newLocation);
-        listObjectOnMap.addObjectToList(charOnMap, locationList);
+        boolean newLocationSelected = false;
+        while (!newLocationSelected) {
+            int currentY = Engine.getEngine().random.nextInt(numberOfRowsMap);
+            int currentX = Engine.getEngine().random.nextInt(numberOfColumnsMap);
+            newLocation = new int[] {currentY,currentX};
+            if (listLocationAndObjectOnMap.hasObjectAtLocation(newLocation) == null) {
+                currentLocation = newLocation;
+                listLocationAndObjectOnMap.addObjectToListLocationAndObjectOnMap(currentLocation, this);
+                newLocationSelected = true;
+            }
+        }
     }
     public void action () {
+        if (!checkExistence()) {
+            return;
+        }
         boolean actionSuccess = false;
-        while (!actionSuccess) {
-            iterator = locationList.iterator();
-            currentLocation = iterator.next();
-            iterator = locationList.iterator();
-            currentLocation = iterator.next();
-            //move logic
-            if (switchLogicForMove) {
-                newLocation = new int[]{currentLocation[0] - 1, currentLocation[1]};
+        //counter break cycle if person cant choose direction
+        int counter = 0;
+        while (!actionSuccess && counter < 10) {
+            counter++;
+            action.get(currentDirection).run();
+            if (iterationLogic()) {
+                listLocationAndObjectOnMap.removeObjectFromListLocationAndObjectOnMap(currentLocation);
+                currentLocation = newLocation;
+                listLocationAndObjectOnMap.addObjectToListLocationAndObjectOnMap(currentLocation, this);
+                actionSuccess = true;
             } else {
-                newLocation = new int[]{currentLocation[0] + 1, currentLocation[1]};
+                char[] chars = {'w', 's', 'a', 'd'};
+                currentDirection = chars[Engine.getEngine().random.nextInt(chars.length)];
             }
-            //iteration logic
-            if (iterationLogic(listObjectOnMap.hasObjectAtLocation(newLocation), newLocation)) {
-                locationList.remove(currentLocation);
-                locationList.add(newLocation);
-                listObjectOnMap.addObjectToList(charOnMap, locationList);
-                actionSuccess = !actionSuccess;
-            } else {
-                switchLogicForMove = !switchLogicForMove;
-            }
+        }
+        if (currentHp <= 0) {
+            dispose();
         }
     }
 
     @Override
-    public boolean iterationLogic(Character currentCharOnMap, int[] newLocation) {
-        switch (currentCharOnMap) {
-            case '#', 's':
+    public boolean iterationLogic() {
+        if (listLocationAndObjectOnMap.hasObjectAtLocation(newLocation) == null){
+            //if none, can move
+            return true;
+        }
+        char charOnNewLocation = listLocationAndObjectOnMap.hasObjectAtLocation(newLocation).charOnMap;
+        switch (charOnNewLocation) {
+            case '#', 's', 'b', 'd':
                 return false;
+            case '$':
+                return true;
             case 't':
-                Random random = new Random();
-
-                HashSet<int[]> locationOfTeleport = listObjectOnMap.getListObjectOnMap().get(currentCharOnMap);
-
-                boolean newLocationFound = false;
-                while (!newLocationFound) {
-                    for(int[] value : locationOfTeleport) {
-                        if (!Arrays.equals(value, newLocation) && random.nextBoolean()) {
-                            newLocation = value;
-                            newLocationFound = true;
-                            break;
+                ArrayList<int[]> locationTeleport = listLocationAndObjectOnMap.getListLocationByChar(charOnNewLocation);
+                //if all teleport in bad position, destroy teleport
+                int counter = 0;
+                while (counter<10) {
+                    counter++;
+                    int[] randomNewLocation = locationTeleport.get(Engine.getEngine().random.nextInt(locationTeleport.size()));
+                    if (randomNewLocation != newLocation) {
+                        //add list location around teleport
+                        ArrayList<int[]> listLocationAroundChosenTeleport = new ArrayList<>();
+                        listLocationAroundChosenTeleport.add(new int[] {randomNewLocation[0]+1, randomNewLocation[1]});
+                        listLocationAroundChosenTeleport.add(new int[] {randomNewLocation[0]-1, randomNewLocation[1]});
+                        listLocationAroundChosenTeleport.add(new int[] {randomNewLocation[0], randomNewLocation[1]+1});
+                        listLocationAroundChosenTeleport.add(new int[] {randomNewLocation[0], randomNewLocation[1]-1});
+                        //check location around chosen teleport
+                        for (int[] location : listLocationAroundChosenTeleport) {
+                            if (listLocationAndObjectOnMap.hasObjectAtLocation(location) == null) {
+                                newLocation = location;
+                                return true;
+                            }
                         }
                     }
                 }
-                locationList.remove(currentLocation);
-                locationList.add(newLocation);
-                listObjectOnMap.addObjectToList(charOnMap, locationList);
-                return false;
+                return true;
+            case '@':
+                listLocationAndObjectOnMap.hasObjectAtLocation(newLocation).currentHp -= damage;
+                if (listLocationAndObjectOnMap.hasObjectAtLocation(newLocation).currentHp <= 0) {
+                    listLocationAndObjectOnMap.hasObjectAtLocation(newLocation).dispose();
+                }
+                newLocation = currentLocation;
+                return true;
         }
-        return true;
+        return false;
     }
+
 }

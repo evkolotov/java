@@ -1,31 +1,39 @@
 package main.objects.objectOnMap.person;
 
 import main.engine.Engine;
-import main.objects.ListObjectOnMap;
-import main.objects.objectOnMap.Object;
+import main.objects.ListLocationAndObjectOnMap;
+import main.objects.objectOnMap.ObjectOnMap;
 
-import java.util.HashSet;
-import java.util.Random;
-
-public class Spike extends Object {
-    private int numberOfSpike = 15;
-    public Spike (ListObjectOnMap listObjectOnMap) {
-        this.charOnMap = 's';
+public class Spike extends ObjectOnMap {
+    private int numberOfSpikeOnMap = 10;
+    public Spike (ListLocationAndObjectOnMap listLocationAndObjectOnMap) {
+        //InitWallUseForCreateAllSpikeOnMap
+        this.listLocationAndObjectOnMap = listLocationAndObjectOnMap;
         this.numberOfRowsMap = Engine.getEngine().numberOfRowsMap;
         this.numberOfColumnsMap = Engine.getEngine().numberOfColumnsMap;
-        this.locationList = new HashSet<int[]>();
-        this.listObjectOnMap = listObjectOnMap;
+    }
+    private Spike (int[] currentLocation, ListLocationAndObjectOnMap listLocationAndObjectOnMap) {
+        //ObjectOnMap
+        this.charOnMap = 's';
+        this.currentLocation = currentLocation;
+        this.damage = 10;
+        this.listLocationAndObjectOnMap = listLocationAndObjectOnMap;
+    }
+    private void addCurrentSpikeOnMap () {
+        listLocationAndObjectOnMap.addObjectToListLocationAndObjectOnMap(currentLocation, this);
     }
     public void addOnMap() {
-        Random random = new Random();
-        for (int i=0; i<numberOfSpike; i++) {
-            int[] newLocation;
-            do {
-                newLocation = new int[] {random.nextInt(numberOfRowsMap), random.nextInt(numberOfColumnsMap)};
-            } while (listObjectOnMap.hasObjectAtLocation(newLocation) != '.');
-            locationList.add(newLocation);
-            listObjectOnMap.addObjectToList(charOnMap, locationList);
+        //add random Spike
+        int counter = 0;
+        while (counter != numberOfSpikeOnMap) {
+            int currentY = Engine.getEngine().random.nextInt(numberOfRowsMap);
+            int currentX = Engine.getEngine().random.nextInt(numberOfColumnsMap);
+            int[] currentLocation = new int[] {currentY,currentX};
+            if (listLocationAndObjectOnMap.hasObjectAtLocation(currentLocation) == null) {
+                Spike currentSpike = new Spike(currentLocation, listLocationAndObjectOnMap);
+                currentSpike.addCurrentSpikeOnMap();
+                counter++;
+            }
         }
     }
-
 }
