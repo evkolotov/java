@@ -8,10 +8,10 @@ import java.util.HashMap;
 import java.util.Set;
 
 public class Hero extends Person {
-    private String name;
-    private int lvl;
-    private int currentExp;
-    private int numberOfCoin;
+    public String name;
+    public int lvl;
+    public int currentExp;
+    public int numberOfCoin;
     public Hero (String name, ListLocationAndObjectOnMap listLocationAndObjectOnMap) {
         //ObjectOnMap
         this.charOnMap = '@';
@@ -24,6 +24,9 @@ public class Hero extends Person {
         this.newLocation = new int[]{0,0};
         //PersonAction
         this.action = new HashMap<Character, Runnable>();
+        action.put('q', () -> {
+            newLocation = currentLocation;
+        });
         action.put('w', () -> {
             newLocation = new int[]{currentLocation[0] - 1, currentLocation[1]};
         });
@@ -125,7 +128,6 @@ public class Hero extends Person {
                     currentExp += listLocationAndObjectOnMap.hasObjectAtLocation(newLocation).maxHp;
                     listLocationAndObjectOnMap.hasObjectAtLocation(newLocation).dispose();
                     System.out.println("you killed the enemy");
-                    System.out.println("We're Watching You. Scum");
                 } else {
                     System.out.println("you attacked the enemy, for what?");
                 }

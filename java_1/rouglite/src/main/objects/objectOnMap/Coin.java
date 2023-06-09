@@ -4,7 +4,7 @@ import main.engine.Engine;
 import main.objects.ListLocationAndObjectOnMap;
 
 public class Coin extends ObjectOnMap {
-    private int numberOfCoinOnMap = 15;
+    private int numberOfCoinOnMap = 30;
 
     public Coin (ListLocationAndObjectOnMap listLocationAndObjectOnMap) {
         //InitWallUseForCreateAllCoinsOnMap

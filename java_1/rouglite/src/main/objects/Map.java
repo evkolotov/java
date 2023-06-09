@@ -36,11 +36,14 @@ public class Map <T extends ObjectOnMap>  {
             for (int j=0; j<numberOfColumnsMap; j++) {
                 System.out.print(map[i][j]);
                 if (j != numberOfColumnsMap-1) {
-                    System.out.print("\t");
+                    System.out.print(" ");
                 }
             }
             System.out.println();
         }
     }
 
+    public char[][] getMap() {
+        return map;
+    }
 }
