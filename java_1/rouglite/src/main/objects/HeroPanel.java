@@ -3,26 +3,44 @@ package main.objects;
 import main.objects.objectOnMap.person.Hero;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class HeroPanel extends JPanel {
+    private JLabel statusBar;
+    private JLabel name;
+    private JLabel lvl;
+    private JLabel currentExp;
+    private JLabel hp;
+    private JLabel damage;
+    private JLabel numberOfCoin;
     private Hero hero;
     public HeroPanel(Hero hero) {
         this.hero = hero;
-        JLabel label = new JLabel("[StatusBar] [Name: ");
-        add(label);
-        label = new JLabel(hero.name);
-        add(label);
-        label = new JLabel("] [lvl: ");
-        add(label);
-        label = new JLabel(String.valueOf(hero.lvl));
-        add(label);
-        label = new JLabel("] [exp: ");
-        add(label);
-        label = new JLabel(String.valueOf(hero.currentExp));
-        add(label);
-        label = new JLabel("] [HP: ");
-        add(label);
-        label = new JLabel(String.valueOf(hero.currentHp));
-        add(label);
+
+        statusBar = new JLabel("StatusBar");
+        name = new JLabel("Name: " + hero.getName());
+        lvl = new JLabel("lvl: " + hero.getLvl());
+        currentExp = new JLabel("exp: " + hero.getCurrentExp());
+        hp = new JLabel("HP: " + hero.getCurrentHp() + "/" + hero.getMaxHp());
+        damage = new JLabel("Damage: " + hero.getDamage());
+        numberOfCoin = new JLabel("numberOfCoin: " + hero.getNumberOfCoin());
+
+        JPanel panel = new JPanel(new GridLayout(1,7));
+        panel.add(statusBar);
+        panel.add(name);
+        panel.add(lvl);
+        panel.add(currentExp);
+        panel.add(hp);
+        panel.add(damage);
+        panel.add(numberOfCoin);
+        add(panel);
+    }
+    public void updateHeroPanel () {
+        name.setText("Name: " + hero.getName());
+        lvl.setText("lvl: " + hero.getLvl());
+        currentExp.setText("exp: " + hero.getCurrentExp());
+        hp.setText("HP: " + hero.getCurrentHp() + "/" + hero.getMaxHp());
+        damage.setText("Damage: " + hero.getDamage());
+        numberOfCoin.setText("numberOfCoin: " + hero.getNumberOfCoin());
     }
 }

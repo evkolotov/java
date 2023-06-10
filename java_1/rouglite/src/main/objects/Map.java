@@ -10,7 +10,6 @@ public class Map <T extends ObjectOnMap>  {
     private int numberOfRowsMap;
     private int numberOfColumnsMap;
     private ListLocationAndObjectOnMap listLocationAndObjectOnMap;
-
     public Map(ListLocationAndObjectOnMap listLocationAndObjectOnMap) {
         this.numberOfRowsMap = Engine.getEngine().numberOfRowsMap;
         this.numberOfColumnsMap = Engine.getEngine().numberOfColumnsMap;
@@ -21,15 +20,14 @@ public class Map <T extends ObjectOnMap>  {
 
         for (int i=0; i<numberOfRowsMap; i++) {
             for (int j=0; j<numberOfColumnsMap; j++) {
-                map[i][j] = '.';
+                T object = (T) listLocationAndObjectOnMap.hasObjectAtLocation(new int [] {i,j});
+                if (object == null) {
+                    map[i][j] = '.';
+                } else {
+                    map[i][j] = object.charOnMap;
+                }
             }
         }
-
-        HashMap<int[], T> locationAndObjectOnMap = listLocationAndObjectOnMap.getListLocationAndObjectOnMap();
-        for (int[] key : locationAndObjectOnMap.keySet()) {
-            map[key[0]][key[1]] = locationAndObjectOnMap.get(key).charOnMap;
-        }
-
     }
     public void renderMap () {
         for (int i=0; i<numberOfRowsMap; i++) {
@@ -42,7 +40,6 @@ public class Map <T extends ObjectOnMap>  {
             System.out.println();
         }
     }
-
     public char[][] getMap() {
         return map;
     }

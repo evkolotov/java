@@ -62,6 +62,7 @@ public class ArrowKeys extends JPanel implements KeyListener  {
         g.setFont(font);
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
+
                 g.drawString(Character.toString(myArray[i][j]), j * tileSize, (i + 1) * tileSize);
             }
         }

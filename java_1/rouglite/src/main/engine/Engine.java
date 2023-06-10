@@ -88,14 +88,16 @@ public class Engine {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         ArrowKeys arrowKeys = new ArrowKeys(map);
         frame.getContentPane().add(arrowKeys);
+        HeroPanel heroPanel = new HeroPanel(hero);
+        heroPanel.updateHeroPanel();
+        frame.getContentPane().add(heroPanel, BorderLayout.SOUTH);
         frame.pack();
         frame.setVisible(true);
         arrowKeys.requestFocusInWindow();
 
-//        HeroPanel heroPanel = new HeroPanel(hero);
-//        frame.getContentPane().add(heroPanel, BorderLayout.SOUTH);
-
         //run
+        heroPanel.updateHeroPanel();
+
         while (true) {
             inputChar = '#';
 
@@ -112,6 +114,7 @@ public class Engine {
 
             hero.action(inputChar);
             map.generateMap();
+            heroPanel.updateHeroPanel();
 
             patrolEnemy1.action();
             pursuingEnemy1.action();
@@ -129,8 +132,6 @@ public class Engine {
             pursuingEnemy5.action();
 
             map.generateMap();
-            map.renderMap();
-            hero.getStatus();
         }
     }
 }

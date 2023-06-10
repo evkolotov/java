@@ -147,4 +147,26 @@ public class Hero extends Person {
         System.out.println("YOU DIED, THANKS");
         listLocationAndObjectOnMap.removeObjectFromListLocationAndObjectOnMap(currentLocation);
     }
+
+    public String getName() {
+        return name;
+    }
+    public int getLvl() {
+        return lvl;
+    }
+    public int getCurrentExp() {
+        return currentExp;
+    }
+    public int getMaxHp() {
+        return maxHp;
+    }
+    public int getCurrentHp() {
+        return currentHp;
+    }
+    public int getDamage() {
+        return damage;
+    }
+    public int getNumberOfCoin() {
+        return numberOfCoin;
+    }
 }

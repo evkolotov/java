@@ -17,13 +17,6 @@ public class ListLocationAndObjectOnMap <T extends ObjectOnMap>  implements Obje
     public void removeObjectFromListLocationAndObjectOnMap(int [] location) {
         listLocationAndObjectOnMap.remove(new IntArrayKey(location));
     }
-    public HashMap<int[], T> getListLocationAndObjectOnMap() {
-        HashMap<int[], T> result = new HashMap<>();
-        for (IntArrayKey key : listLocationAndObjectOnMap.keySet()) {
-            result.put(key.array, listLocationAndObjectOnMap.get(key));
-        }
-        return result;
-    }
     @Override
     public T hasObjectAtLocation(int[] location) {
         return listLocationAndObjectOnMap.get(new IntArrayKey(location));
