@@ -1,10 +1,7 @@
 package main.engine;
 
-import main.objects.ArrowKeys;
-import main.objects.HeroPanel;
-import main.objects.Map;
+import main.objects.*;
 import main.objects.objectOnMap.Coin;
-import main.objects.ListLocationAndObjectOnMap;
 import main.objects.objectOnMap.Teleport;
 import main.objects.objectOnMap.Wall;
 import main.objects.objectOnMap.person.Enemy.PatrolEnemy;
@@ -26,6 +23,7 @@ public class Engine {
     public Random random = new Random();
     public char inputChar;
     public static boolean inputProcessed = false;
+    public boolean inventoryVisible = false;
     private Engine() {
     }
     public static Engine getEngine() {
@@ -40,7 +38,9 @@ public class Engine {
 
         Map map = new Map(listLocationAndObjectOnMap);
 
-        Hero hero = new Hero("Heroin", listLocationAndObjectOnMap);
+        Inventory inventory = new Inventory();
+        inventory.setVisible(false);
+        Hero hero = new Hero("Heroin", listLocationAndObjectOnMap, inventory);
         hero.addOnMap();
 
         Wall wall = new Wall(listLocationAndObjectOnMap);
@@ -81,8 +81,6 @@ public class Engine {
         pursuingEnemy5.addOnMap();
 
         map.generateMap();
-        map.renderMap();
-        hero.getStatus();
 
         JFrame frame = new JFrame("ArrowKeysExample");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -91,6 +89,7 @@ public class Engine {
         HeroPanel heroPanel = new HeroPanel(hero);
         heroPanel.updateHeroPanel();
         frame.getContentPane().add(heroPanel, BorderLayout.SOUTH);
+        frame.getContentPane().add(inventory, BorderLayout.EAST);
         frame.pack();
         frame.setVisible(true);
         arrowKeys.requestFocusInWindow();
@@ -99,8 +98,9 @@ public class Engine {
         heroPanel.updateHeroPanel();
 
         while (true) {
+            map.generateMap();
             inputChar = '#';
-
+            //wait inputChar
             while (!inputProcessed) {
                 synchronized (Engine.getEngine()) {
                     try {
@@ -114,6 +114,11 @@ public class Engine {
 
             hero.action(inputChar);
             map.generateMap();
+
+            if (inventoryVisible) {
+                continue;
+            }
+
             heroPanel.updateHeroPanel();
 
             patrolEnemy1.action();

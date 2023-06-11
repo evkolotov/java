@@ -1,6 +1,7 @@
 package main.objects.objectOnMap.person;
 
 import main.engine.Engine;
+import main.objects.Inventory;
 import main.objects.ListLocationAndObjectOnMap;
 
 import java.util.ArrayList;
@@ -12,7 +13,9 @@ public class Hero extends Person {
     public int lvl;
     public int currentExp;
     public int numberOfCoin;
-    public Hero (String name, ListLocationAndObjectOnMap listLocationAndObjectOnMap) {
+    private Inventory inventory;
+    private HashMap<Character, Runnable> actionInventory;
+    public Hero (String name, ListLocationAndObjectOnMap listLocationAndObjectOnMap, Inventory inventory) {
         //ObjectOnMap
         this.charOnMap = '@';
         this.currentLocation = new int[]{0,0};
@@ -24,8 +27,9 @@ public class Hero extends Person {
         this.newLocation = new int[]{0,0};
         //PersonAction
         this.action = new HashMap<Character, Runnable>();
-        action.put('q', () -> {
-            newLocation = currentLocation;
+        action.put('i', () -> {
+            Engine.getEngine().inventoryVisible = !Engine.getEngine().inventoryVisible;
+            inventory.setVisible(Engine.getEngine().inventoryVisible);
         });
         action.put('w', () -> {
             newLocation = new int[]{currentLocation[0] - 1, currentLocation[1]};
@@ -38,6 +42,18 @@ public class Hero extends Person {
         });
         action.put('d', () -> {
             newLocation = new int[]{currentLocation[0], currentLocation[1] + 1};
+        });
+        //hero action inventory
+        this.actionInventory = new HashMap<Character, Runnable>();
+        actionInventory.put('i', () -> {
+            Engine.getEngine().inventoryVisible = !Engine.getEngine().inventoryVisible;
+            inventory.setVisible(Engine.getEngine().inventoryVisible);
+        });
+        actionInventory.put('w', () -> {
+            inventory.currentSlotInventoryUp();
+        });
+        actionInventory.put('s', () -> {
+            inventory.currentSlotInventoryDown();
         });
         //Hero
         this.name = name;
@@ -54,20 +70,22 @@ public class Hero extends Person {
             return;
         }
         //start Action
-        if (action.containsKey(inputChar)) {
-            action.get(inputChar).run();
+        if (action.containsKey(inputChar) || actionInventory.containsKey(inputChar)) {
+            if (Engine.getEngine().inventoryVisible) {
+                try {
+                    actionInventory.get(inputChar).run();
+                } catch (NullPointerException e) {}
+                return;
+            } else {
+                try {
+                    action.get(inputChar).run();
+                } catch (NullPointerException e) {}
+            }
             int[] locationForCheck = newLocation;
             if (iterationLogic()) {
                 listLocationAndObjectOnMap.removeObjectFromListLocationAndObjectOnMap(currentLocation);
                 currentLocation = newLocation;
                 listLocationAndObjectOnMap.addObjectToListLocationAndObjectOnMap(currentLocation, this);
-            }
-        } else {
-            System.out.println("wrong input");
-            Set<Character> keys = action.keySet();
-            for (Character key : keys) {
-                System.out.println("wrong input, use key:");
-                System.out.print(key+"\t");
             }
         }
         if (currentHp <= 0) {

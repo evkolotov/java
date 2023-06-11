@@ -40,6 +40,9 @@ public class ArrowKeys extends JPanel implements KeyListener  {
         } else if (key == KeyEvent.VK_DOWN) {
             Engine.getEngine().inputChar = 's';
             Engine.getEngine().inputProcessed = true; // установка флага в true
+        } else if (key == KeyEvent.VK_I) {
+            Engine.getEngine().inputChar = 'i';
+            Engine.getEngine().inputProcessed = true; // установка флага в true
         }
         synchronized (Engine.getEngine()) {
             Engine.getEngine().notify(); // оповещение ожидающего потока, что флаг изменился

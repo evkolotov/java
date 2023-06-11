@@ -6,7 +6,6 @@ import javax.swing.*;
 import java.awt.*;
 
 public class HeroPanel extends JPanel {
-    private JLabel statusBar;
     private JLabel name;
     private JLabel lvl;
     private JLabel currentExp;
@@ -17,7 +16,6 @@ public class HeroPanel extends JPanel {
     public HeroPanel(Hero hero) {
         this.hero = hero;
 
-        statusBar = new JLabel("StatusBar");
         name = new JLabel("Name: " + hero.getName());
         lvl = new JLabel("lvl: " + hero.getLvl());
         currentExp = new JLabel("exp: " + hero.getCurrentExp());
@@ -26,7 +24,6 @@ public class HeroPanel extends JPanel {
         numberOfCoin = new JLabel("numberOfCoin: " + hero.getNumberOfCoin());
 
         JPanel panel = new JPanel(new GridLayout(1,7));
-        panel.add(statusBar);
         panel.add(name);
         panel.add(lvl);
         panel.add(currentExp);
@@ -43,4 +40,5 @@ public class HeroPanel extends JPanel {
         damage.setText("Damage: " + hero.getDamage());
         numberOfCoin.setText("numberOfCoin: " + hero.getNumberOfCoin());
     }
+
 }
