@@ -59,7 +59,7 @@ public class PursuingEnemy extends Enemy {
         switch (charOnNewLocation) {
             case '#', 's', 'b', 'd', 't':
                 return false;
-            case '$':
+            case '$', '-':
                 return true;
             case '@':
                 listLocationAndObjectOnMap.hasObjectAtLocation(newLocation).currentHp -= damage;

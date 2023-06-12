@@ -3,6 +3,7 @@ package main.objects.objectOnMap.person;
 import main.engine.Engine;
 import main.objects.Inventory;
 import main.objects.ListLocationAndObjectOnMap;
+import main.objects.objectOnMap.GeneratorLoot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,16 +14,19 @@ public class Hero extends Person {
     public int lvl;
     public int currentExp;
     public int numberOfCoin;
+    public int damageFromLoot;
     private Inventory inventory;
+    private GeneratorLoot generatorLoot;
     private HashMap<Character, Runnable> actionInventory;
-    public Hero (String name, ListLocationAndObjectOnMap listLocationAndObjectOnMap, Inventory inventory) {
+    public Hero (String name, ListLocationAndObjectOnMap listLocationAndObjectOnMap, Inventory inventory, GeneratorLoot generatorLoot) {
         //ObjectOnMap
         this.charOnMap = '@';
         this.currentLocation = new int[]{0,0};
         this.listLocationAndObjectOnMap = listLocationAndObjectOnMap;
         this.maxHp = 100;
         this.currentHp = maxHp;
-        this.damage = 15;
+        this.damageFromLoot = 0;
+        this.damage = 10;
         //Person
         this.newLocation = new int[]{0,0};
         //PersonAction
@@ -43,6 +47,13 @@ public class Hero extends Person {
         action.put('d', () -> {
             newLocation = new int[]{currentLocation[0], currentLocation[1] + 1};
         });
+        action.put('e', () -> {
+            GeneratorLoot.Loot loot = (GeneratorLoot.Loot) listLocationAndObjectOnMap.getLootAroundLocation(currentLocation);
+            if (loot != null) {
+                inventory.addLootToInventory(loot);
+                listLocationAndObjectOnMap.removeObjectFromListLocationAndObjectOnMap(loot.currentLocation);
+            }
+        });
         //hero action inventory
         this.actionInventory = new HashMap<Character, Runnable>();
         actionInventory.put('i', () -> {
@@ -55,11 +66,18 @@ public class Hero extends Person {
         actionInventory.put('s', () -> {
             inventory.currentSlotInventoryDown();
         });
+        actionInventory.put('e', () -> {
+            inventory.setEquipSlot();
+            damageFromLoot = inventory.getDamageFromCurrentSlot();
+            this.damage = 10 + damageFromLoot;
+        });
         //Hero
         this.name = name;
         this.lvl = 1;
         this.currentExp = 0;
         this.numberOfCoin = 0;
+        this.generatorLoot = generatorLoot;
+
     }
     public void addOnMap () {
         currentLocation = new int[]{1,1};
@@ -107,7 +125,7 @@ public class Hero extends Person {
         }
         char charOnNewLocation = listLocationAndObjectOnMap.hasObjectAtLocation(newLocation).charOnMap;
         switch (charOnNewLocation) {
-            case '#':
+            case '#', '-':
                 return false;
             case '$':
                 numberOfCoin++;
@@ -145,24 +163,13 @@ public class Hero extends Person {
                 if (listLocationAndObjectOnMap.hasObjectAtLocation(newLocation).currentHp <= 0) {
                     currentExp += listLocationAndObjectOnMap.hasObjectAtLocation(newLocation).maxHp;
                     listLocationAndObjectOnMap.hasObjectAtLocation(newLocation).dispose();
-                    System.out.println("you killed the enemy");
-                } else {
-                    System.out.println("you attacked the enemy, for what?");
+                    generatorLoot.generateLootOnLocation(newLocation);
                 }
                 return false;
         }
         return false;
     }
-    public void getStatus () {
-        System.out.println("[StatusBar] [Name: "+name+
-                "] [lvl: "+lvl+
-                "] [exp: "+currentExp+
-                "] [HP: "+currentHp+"/"+maxHp+
-                "] [Damage: "+damage+
-                "] [numberOfCoin: "+numberOfCoin+"]");
-    }
     public void dispose() {
-        System.out.println("YOU DIED, THANKS");
         listLocationAndObjectOnMap.removeObjectFromListLocationAndObjectOnMap(currentLocation);
     }
 

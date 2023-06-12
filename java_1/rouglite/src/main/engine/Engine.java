@@ -2,6 +2,7 @@ package main.engine;
 
 import main.objects.*;
 import main.objects.objectOnMap.Coin;
+import main.objects.objectOnMap.GeneratorLoot;
 import main.objects.objectOnMap.Teleport;
 import main.objects.objectOnMap.Wall;
 import main.objects.objectOnMap.person.Enemy.PatrolEnemy;
@@ -40,7 +41,8 @@ public class Engine {
 
         Inventory inventory = new Inventory();
         inventory.setVisible(false);
-        Hero hero = new Hero("Heroin", listLocationAndObjectOnMap, inventory);
+        GeneratorLoot generatorLoot = new GeneratorLoot(listLocationAndObjectOnMap);
+        Hero hero = new Hero("Heroin", listLocationAndObjectOnMap, inventory, generatorLoot);
         hero.addOnMap();
 
         Wall wall = new Wall(listLocationAndObjectOnMap);

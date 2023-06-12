@@ -1,10 +1,12 @@
 package main.objects;
 
+import main.objects.objectOnMap.GeneratorLoot;
 import main.objects.objectOnMap.ObjectOnMap;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 public class ListLocationAndObjectOnMap <T extends ObjectOnMap>  implements ObjectOnMapChecker{
     private HashMap<IntArrayKey, T> listLocationAndObjectOnMap;
@@ -21,7 +23,6 @@ public class ListLocationAndObjectOnMap <T extends ObjectOnMap>  implements Obje
     public T hasObjectAtLocation(int[] location) {
         return listLocationAndObjectOnMap.get(new IntArrayKey(location));
     }
-
     public ArrayList<int[]> getListLocationByChar(char charToSearch) {
         ArrayList<int[]> result = new ArrayList<>();
         for (IntArrayKey key : listLocationAndObjectOnMap.keySet()) {
@@ -31,6 +32,21 @@ public class ListLocationAndObjectOnMap <T extends ObjectOnMap>  implements Obje
         }
         return result;
     }
+    public T getLootAroundLocation(int [] location) {
+        ArrayList<int[]> locationAround = new ArrayList<>();
+        locationAround.add(new int[] {location[0]+1, location[1]});
+        locationAround.add(new int[] {location[0]-1, location[1]});
+        locationAround.add(new int[] {location[0], location[1]+1});
+        locationAround.add(new int[] {location[0], location[1]-1});
+        for (int[] key : locationAround) {
+             T objectAtLocation = hasObjectAtLocation(key);
+            if (objectAtLocation instanceof GeneratorLoot.Loot) {
+                return objectAtLocation;
+            }
+        }
+        return null;
+    }
+
     static class IntArrayKey {
         private final int[] array;
         IntArrayKey(int[] array) {

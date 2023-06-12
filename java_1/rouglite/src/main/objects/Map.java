@@ -29,6 +29,7 @@ public class Map <T extends ObjectOnMap>  {
             }
         }
     }
+    //if all be bad =/
     public void renderMap () {
         for (int i=0; i<numberOfRowsMap; i++) {
             for (int j=0; j<numberOfColumnsMap; j++) {

@@ -83,7 +83,7 @@ public class PatrolEnemy extends Enemy {
         switch (charOnNewLocation) {
             case '#', 's', 'b', 'd':
                 return false;
-            case '$':
+            case '$', '-':
                 return true;
             case 't':
                 ArrayList<int[]> locationTeleport = listLocationAndObjectOnMap.getListLocationByChar(charOnNewLocation);
