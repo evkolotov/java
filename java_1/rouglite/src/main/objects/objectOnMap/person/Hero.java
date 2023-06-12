@@ -48,10 +48,11 @@ public class Hero extends Person {
             newLocation = new int[]{currentLocation[0], currentLocation[1] + 1};
         });
         action.put('e', () -> {
+            newLocation = currentLocation;
             GeneratorLoot.Loot loot = (GeneratorLoot.Loot) listLocationAndObjectOnMap.getLootAroundLocation(currentLocation);
             if (loot != null) {
                 inventory.addLootToInventory(loot);
-                listLocationAndObjectOnMap.removeObjectFromListLocationAndObjectOnMap(loot.currentLocation);
+                loot.dispose();
             }
         });
         //hero action inventory
@@ -129,7 +130,6 @@ public class Hero extends Person {
                 return false;
             case '$':
                 numberOfCoin++;
-                listLocationAndObjectOnMap.removeObjectFromListLocationAndObjectOnMap(newLocation);
                 return true;
             case 't':
                 ArrayList<int[]> locationTeleport = listLocationAndObjectOnMap.getListLocationByChar(charOnNewLocation);
@@ -166,13 +166,12 @@ public class Hero extends Person {
                     generatorLoot.generateLootOnLocation(newLocation);
                 }
                 return false;
+            case '&':
+                listLocationAndObjectOnMap.hasObjectAtLocation(newLocation).dispose();
+                return false;
         }
         return false;
     }
-    public void dispose() {
-        listLocationAndObjectOnMap.removeObjectFromListLocationAndObjectOnMap(currentLocation);
-    }
-
     public String getName() {
         return name;
     }

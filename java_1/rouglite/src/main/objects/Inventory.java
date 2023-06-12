@@ -44,6 +44,12 @@ public class Inventory extends JPanel {
         currentSlotText = slotInventoryName.get(currentSlot).getText();
         slotInventoryName.get(currentSlot).setText("--->    " + currentSlotText);
         } catch (IndexOutOfBoundsException e) {}
+        String equipSlotText = null;
+        try {
+            equipSlotText = slotInventoryName.get(equipSlot).getText();
+            slotInventoryName.get(equipSlot).setText(equipSlotText+"    ||");
+        } catch (IndexOutOfBoundsException e) {}
+        catch (NullPointerException e) {}
     }
     public void currentSlotInventoryUp () {
         String currentSlotText = null;
@@ -82,7 +88,6 @@ public class Inventory extends JPanel {
                 equipSlotText = equipSlotText.substring(0, equipSlotText.length() - 6);
             }
             slotInventoryName.get(equipSlot).setText(equipSlotText);
-            equipSlot += slotInventoryName.size();
             equipSlot = currentSlot;
             equipSlotText = slotInventoryName.get(equipSlot).getText();
             slotInventoryName.get(equipSlot).setText(equipSlotText+"    ||");

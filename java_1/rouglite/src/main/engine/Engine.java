@@ -1,10 +1,7 @@
 package main.engine;
 
 import main.objects.*;
-import main.objects.objectOnMap.Coin;
-import main.objects.objectOnMap.GeneratorLoot;
-import main.objects.objectOnMap.Teleport;
-import main.objects.objectOnMap.Wall;
+import main.objects.objectOnMap.*;
 import main.objects.objectOnMap.person.Enemy.PatrolEnemy;
 import main.objects.objectOnMap.person.Enemy.PursuingEnemy;
 import main.objects.objectOnMap.person.Hero;
@@ -41,7 +38,9 @@ public class Engine {
 
         Inventory inventory = new Inventory();
         inventory.setVisible(false);
+
         GeneratorLoot generatorLoot = new GeneratorLoot(listLocationAndObjectOnMap);
+
         Hero hero = new Hero("Heroin", listLocationAndObjectOnMap, inventory, generatorLoot);
         hero.addOnMap();
 
@@ -56,6 +55,9 @@ public class Engine {
 
         Spike spike = new Spike(listLocationAndObjectOnMap);
         spike.addOnMap();
+
+        Chest chest = new Chest(listLocationAndObjectOnMap, generatorLoot, coin);
+        chest.addOnMap();
 
         PatrolEnemy patrolEnemy1 = new PatrolEnemy(listLocationAndObjectOnMap);
         patrolEnemy1.addOnMap();
@@ -116,12 +118,11 @@ public class Engine {
 
             hero.action(inputChar);
             map.generateMap();
+            heroPanel.updateHeroPanel();
 
             if (inventoryVisible) {
                 continue;
             }
-
-            heroPanel.updateHeroPanel();
 
             patrolEnemy1.action();
             pursuingEnemy1.action();

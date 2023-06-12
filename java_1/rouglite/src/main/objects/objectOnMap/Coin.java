@@ -12,14 +12,18 @@ public class Coin extends ObjectOnMap {
         this.numberOfRowsMap = Engine.getEngine().numberOfRowsMap;
         this.numberOfColumnsMap = Engine.getEngine().numberOfColumnsMap;
     }
-    private Coin (int[] currentLocation, ListLocationAndObjectOnMap listLocationAndObjectOnMap) {
+    public Coin (int[] currentLocation, ListLocationAndObjectOnMap listLocationAndObjectOnMap) {
         //ObjectOnMap
         this.charOnMap = '$';
         this.currentLocation = currentLocation;
         this.listLocationAndObjectOnMap = listLocationAndObjectOnMap;
     }
-    private void addCurrentCoinOnMap () {
+    public void addCurrentCoinOnMap () {
         listLocationAndObjectOnMap.addObjectToListLocationAndObjectOnMap(currentLocation, this);
+    }
+    public void addCoinOnCurrentLocation (int [] location) {
+        Coin currentCoin = new Coin(location, listLocationAndObjectOnMap);
+        currentCoin.addCurrentCoinOnMap();
     }
     public void addOnMap() {
         //add random Coin

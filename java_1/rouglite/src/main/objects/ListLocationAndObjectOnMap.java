@@ -46,7 +46,9 @@ public class ListLocationAndObjectOnMap <T extends ObjectOnMap>  implements Obje
         }
         return null;
     }
-
+    public boolean checkObjectOnList (T object) {
+        return listLocationAndObjectOnMap.containsValue(object);
+    }
     static class IntArrayKey {
         private final int[] array;
         IntArrayKey(int[] array) {
@@ -65,9 +67,6 @@ public class ListLocationAndObjectOnMap <T extends ObjectOnMap>  implements Obje
         public int hashCode() {
             return Arrays.hashCode(array);
         }
-    }
-    public boolean checkObjectOnList (T object) {
-        return listLocationAndObjectOnMap.containsValue(object);
     }
 }
 
