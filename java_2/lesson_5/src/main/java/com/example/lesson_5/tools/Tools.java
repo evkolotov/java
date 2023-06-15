@@ -13,8 +13,9 @@ public class Tools {
         Pattern pat = Pattern.compile("\"fullName\":\s*\"(.*?)\"");
 
         Matcher mat = pat.matcher(request);
-        mat.find();
-
-        return mat.group(1);
+        if (mat.find()) {
+            return mat.group(1);
+        }
+        return null;
     }
 }
